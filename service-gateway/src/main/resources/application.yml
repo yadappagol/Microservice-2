@@ -1,0 +1,44 @@
+
+server:
+  port: 8095
+  
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  
+spring:
+  application:
+    name: GateWay
+  cloud:
+    gateway:
+      routes:
+      - id: studentModule
+        uri: http://localhost:9095/
+        predicates:
+        - Path=/student/**
+      - id: courseModule
+        uri: http://localhost:9096/
+        predicates:
+        - Path=/course/** 
+#        filters:
+#        - name: Requestsize
+#          args:
+#            Maxsize: 5000000   
+          
+  
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+       defaultZone: http://localhost:8083/eureka
+      
+      

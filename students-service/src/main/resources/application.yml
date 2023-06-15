@@ -1,0 +1,73 @@
+
+server:
+  port: 9095
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+
+
+
+spring:
+  application:
+    name: STUDENT-SERVICE
+    
+  datasource:
+    url: ${datasource.url}
+    username: ${datasource.username}
+    password: ${datasource.password}
+  jpa:
+    properties:
+      hibernate:
+        dialect: ${datasource.dialect}
+        connection:
+          characterEncoding: UTF-8
+          CharSet: UTF-8
+          useUnicode: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+ 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+       defaultZone: http://localhost:8083/eureka
+       
+       
+       
+resilience4j:
+  circuitbreaker:
+    configs:
+      shared:
+        register-health-indicator: true
+#       We are using count-based pattern circuit breaker
+        sliding-window-type: COUNT_BASED 
+#       We are setting the number of requests to 5
+        sliding-window-size: 5
+#       We are setting the percentage for requests out of that setted requests(Here ,20 is the percentage value, means 20% of 5 requests )
+        failure-rate-threshold: 40
+#        We are setting the percentage for requests out of that setted requests
+        slow-call-rate-threshold: 40
+#       We are setting one request to check whether the dependent request is down or up
+        permitted-number-of-calls-in-half-open-state: 1
+#       We are setting the time for request to become half open state or closed state
+        max-wait-duration-in-half-open-state: 10s
+#       We are setting minimum time for getting response as 2 seconds,if respond will not came within that two seconds that is considered as failure
+        slow-call-duration-threshold: 5s
+        writable-stack-trace-enabled: true
+        automatic-transition-from-open-to-half-open-enabled: true
+    instances:
+      example:
+         base-config: shared     
